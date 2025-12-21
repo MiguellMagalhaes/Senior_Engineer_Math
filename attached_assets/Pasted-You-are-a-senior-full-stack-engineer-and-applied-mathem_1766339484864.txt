@@ -1,0 +1,139 @@
+You are a senior full-stack engineer and applied mathematics specialist.
+Your task is to create a rigorous, clean and well-structured MVP of a WEB APPLICATION
+for an academic project of the course "Análise Matemática I" in Engenharia Informática
+(Instituto Superior Politécnico de Gaya).
+
+GOAL OF THE APPLICATION
+The web app must demonstrate, in a mathematically rigorous way, three real-world
+applications of definite integrals in Engineering and Computer Science.
+
+The application must allow REAL-TIME INTERACTION:
+users insert parameters and immediately see the numerical result of the integral,
+a graphical representation, and a clear interpretation of the result.
+
+--------------------------------------------
+GENERAL TECHNICAL REQUIREMENTS
+--------------------------------------------
+- Frontend-only MVP (HTML, CSS, Vanilla JavaScript)
+- No frameworks (React, Vue, etc.)
+- Clean, readable, commented code
+- Modular structure
+- Responsive layout
+- Mathematical correctness is mandatory
+
+You may use:
+- Math.js for expression parsing and numerical integration
+- Chart.js for plotting functions
+
+--------------------------------------------
+APPLICATION STRUCTURE
+--------------------------------------------
+Single-page application with:
+- Header (project title + academic context)
+- Navigation tabs or buttons to switch between the three applications
+- One section per application
+- Footer with academic disclaimer
+
+--------------------------------------------
+MATHEMATICAL RIGOUR (VERY IMPORTANT)
+--------------------------------------------
+For each application:
+1. Display the mathematical model (integral formula)
+2. Clearly define variables and units
+3. Perform numerical integration using a correct method
+4. Explain the meaning of the integral result in real-world terms
+
+--------------------------------------------
+APPLICATION 1 — ENERGY CONSUMPTION
+--------------------------------------------
+Title: "Cálculo do Consumo Energético"
+
+Mathematical model:
+E = ∫[t₁,t₂] P(t) dt
+
+Where:
+- P(t): Power function in watts (W)
+- t: time (hours)
+- E: energy in watt-hours (Wh)
+
+User inputs:
+- Power function P(t) (example: 100 + 20*t)
+- Initial time t₁
+- Final time t₂
+
+Outputs:
+- Numerical value of E
+- Graph of P(t)
+- Textual interpretation:
+  "A energia total consumida neste intervalo é X Wh,
+   equivalente a aproximadamente Y kWh."
+
+--------------------------------------------
+APPLICATION 2 — NETWORK DATA TRANSFER
+--------------------------------------------
+Title: "Cálculo de Dados Transferidos numa Rede"
+
+Mathematical model:
+D = ∫[t₁,t₂] R(t) dt
+
+Where:
+- R(t): data rate in Mbps
+- t: time in seconds
+- D: total data transferred (Megabits)
+
+User inputs:
+- Data rate function R(t) (example: 50 + 10*sin(t))
+- Initial time t₁
+- Final time t₂
+
+Outputs:
+- Total data transferred in Megabits
+- Conversion to Megabytes (MB)
+- Graph of R(t)
+- Textual interpretation:
+  "Durante este período, foram transferidos X MB de dados."
+
+--------------------------------------------
+APPLICATION 3 — SERVER COMPUTATIONAL LOAD
+--------------------------------------------
+Title: "Carga Computacional de um Servidor"
+
+Mathematical model:
+C = ∫[t₁,t₂] CPU(t) dt
+
+Where:
+- CPU(t): CPU usage percentage (0–100)
+- t: time in seconds
+- C: cumulative computational load
+
+User inputs:
+- CPU usage function CPU(t) (example: 30 + 40*t/(t+10))
+- Initial time t₁
+- Final time t₂
+
+Outputs:
+- Numerical value of C
+- Graph of CPU(t)
+- Interpretation:
+  "Este valor representa a carga computacional acumulada,
+   sendo útil para análise de desempenho e planeamento de recursos."
+
+--------------------------------------------
+USER EXPERIENCE REQUIREMENTS
+--------------------------------------------
+- Inputs must update results immediately (real-time)
+- Validation of user inputs
+- Clear error messages for invalid functions
+- Mathematical expressions must support t as the variable
+
+--------------------------------------------
+FINAL DETAILS
+--------------------------------------------
+- Use precise academic Portuguese (Portugal)
+- Avoid unnecessary animations
+- Focus on clarity, correctness and didactic value
+- Comment the code explaining the mathematical reasoning where appropriate
+
+DELIVERABLE
+Return the full HTML, CSS and JavaScript code needed to run the MVP in Replit.
+The result must be clean, understandable, and suitable for live classroom demonstration.
