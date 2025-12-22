@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertCalculationSchema, calculations } from './schema';
+import { insertCalculationSchema, calculations, paginatedResponseSchema, statisticsSchema } from './schema';
 
 export const api = {
   calculations: {
@@ -16,7 +16,24 @@ export const api = {
       method: 'GET' as const,
       path: '/api/calculations',
       responses: {
-        200: z.array(z.custom<typeof calculations.$inferSelect>()),
+        200: paginatedResponseSchema,
+      },
+    },
+    statistics: {
+      method: 'GET' as const,
+      path: '/api/calculations/statistics',
+      responses: {
+        200: statisticsSchema,
+      },
+    },
+    export: {
+      method: 'GET' as const,
+      path: '/api/calculations/export',
+      responses: {
+        200: z.object({
+          csv: z.string(),
+          json: z.array(z.custom<typeof calculations.$inferSelect>()),
+        }),
       },
     },
   },
@@ -25,11 +42,18 @@ export const api = {
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
   let url = path;
   if (params) {
+    const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (url.includes(`:${key}`)) {
         url = url.replace(`:${key}`, String(value));
+      } else {
+        searchParams.append(key, String(value));
       }
     });
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
   }
   return url;
 }

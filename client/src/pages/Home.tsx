@@ -7,7 +7,10 @@ import { calculateIntegral, type IntegrationResult } from "@/lib/math-utils";
 import { CalculationForm } from "@/components/CalculationForm";
 import { FunctionChart } from "@/components/FunctionChart";
 import { MathResultCard } from "@/components/MathResultCard";
-import { Zap, Network, Cpu, GraduationCap, Calculator } from "lucide-react";
+import { CalculationHistory } from "@/components/CalculationHistory";
+import { StatisticsPanel } from "@/components/StatisticsPanel";
+import { ExportButton } from "@/components/ExportButton";
+import { Zap, Network, Cpu, GraduationCap, Calculator, History, BarChart3 } from "lucide-react";
 
 export default function Home() {
   const { toast } = useToast();
@@ -17,6 +20,7 @@ export default function Home() {
   const [result, setResult] = useState<IntegrationResult | null>(null);
   const [activeTab, setActiveTab] = useState("energy");
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Handlers for calculation
   const handleCalculate = async (values: any) => {
@@ -24,8 +28,14 @@ export default function Home() {
     setResult(null); // Reset previous result
 
     try {
-      // 1. Perform client-side math calculation
-      const calcResult = calculateIntegral(values.functionExpression, values.t1, values.t2);
+      // 1. Perform client-side math calculation with new parameters
+      const calcResult = calculateIntegral(
+        values.functionExpression, 
+        values.t1, 
+        values.t2,
+        values.steps || 1000,
+        values.useAdaptive || false
+      );
       
       // Simulate a small delay for better UX (so user sees the loading state)
       await new Promise(resolve => setTimeout(resolve, 600));
@@ -41,9 +51,13 @@ export default function Home() {
         result: calcResult.value,
       });
 
+      const errorMsg = calcResult.estimatedError 
+        ? ` (Erro estimado: ${calcResult.estimatedError.toExponential(2)})`
+        : '';
+
       toast({
         title: "Cálculo realizado com sucesso!",
-        description: `Integral calculado no intervalo [${values.t1}, ${values.t2}].`,
+        description: `Integral calculado no intervalo [${values.t1}, ${values.t2}]${errorMsg}.`,
       });
     } catch (error: any) {
       toast({
@@ -120,8 +134,11 @@ export default function Home() {
               <p className="text-xs text-muted-foreground font-medium">Engenharia Informática - ISPGaya</p>
             </div>
           </div>
-          <div className="hidden md:block text-xs font-mono bg-muted px-3 py-1 rounded-full text-muted-foreground">
-            Aplicações do Cálculo Integral
+          <div className="flex items-center gap-2">
+            <ExportButton />
+            <div className="hidden md:block text-xs font-mono bg-muted px-3 py-1 rounded-full text-muted-foreground">
+              Aplicações do Cálculo Integral
+            </div>
           </div>
         </div>
       </header>
@@ -134,6 +151,35 @@ export default function Home() {
             desde o consumo de energia até à análise de tráfego de rede.
           </p>
         </div>
+
+        {/* Statistics and History Toggle */}
+        <div className="mb-6 flex gap-4">
+          <div className="flex-1">
+            <StatisticsPanel />
+          </div>
+          <div className="flex-1">
+            <Card className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <History className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold">Histórico</h3>
+                </div>
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  {showHistory ? "Ocultar" : "Mostrar"}
+                </button>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {showHistory && (
+          <div className="mb-8">
+            <CalculationHistory />
+          </div>
+        )}
 
         <Tabs defaultValue="energy" value={activeTab} onValueChange={onTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-3 h-14 p-1 bg-muted/50 rounded-xl mb-8">
@@ -235,6 +281,8 @@ export default function Home() {
                     interpretation={resultConfig.interpretation}
                     icon={resultConfig.icon}
                     secondaryValue={resultConfig.secondary}
+                    estimatedError={result?.estimatedError}
+                    steps={result?.steps}
                   />
                   
                   <div className="bg-white rounded-xl border border-border shadow-sm p-1">

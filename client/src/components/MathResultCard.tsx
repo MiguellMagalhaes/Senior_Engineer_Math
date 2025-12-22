@@ -9,6 +9,8 @@ interface MathResultCardProps {
   interpretation: string;
   icon?: "energy" | "network" | "cpu";
   secondaryValue?: string;
+  estimatedError?: number;
+  steps?: number;
 }
 
 export function MathResultCard({ 
@@ -17,7 +19,9 @@ export function MathResultCard({
   unit, 
   interpretation, 
   icon = "activity",
-  secondaryValue 
+  secondaryValue,
+  estimatedError,
+  steps
 }: MathResultCardProps) {
   
   const getIcon = () => {
@@ -51,6 +55,14 @@ export function MathResultCard({
           <div className="mt-1 text-sm text-muted-foreground flex items-center gap-1">
             <ArrowRight className="w-3 h-3" />
             {secondaryValue}
+          </div>
+        )}
+        {(estimatedError !== undefined || steps) && (
+          <div className="mt-2 text-xs text-muted-foreground space-y-1">
+            {steps && <div>Subintervalos: {steps}</div>}
+            {estimatedError !== undefined && (
+              <div>Erro estimado: {estimatedError.toExponential(2)}</div>
+            )}
           </div>
         )}
       </div>
