@@ -1,10 +1,26 @@
-import { pgTable, text, serial, numeric, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, numeric, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+// Users table
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(), // hashed
+  name: text("name").notNull(),
+  course: text("course"), // Curso (ex: "Engenharia Informática")
+  year: integer("year"), // Ano de faculdade (1, 2, 3, etc.)
+  isFirstLogin: boolean("is_first_login").default(true),
+  resetPasswordToken: text("reset_password_token"),
+  resetPasswordExpires: timestamp("reset_password_expires"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
 // We will store calculation history for didactic purposes
 export const calculations = pgTable("calculations", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull(), // 'energy', 'network', 'cpu'
   functionExpression: text("function_expression").notNull(),
   t1: numeric("t1").notNull(),
@@ -15,7 +31,55 @@ export const calculations = pgTable("calculations", {
 
 export const insertCalculationSchema = createInsertSchema(calculations).omit({ 
   id: true, 
-  createdAt: true 
+  createdAt: true,
+  userId: true // Will be set from session
+});
+
+// Email validation regex (more flexible)
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// User schemas
+export const registerSchema = z.object({
+  email: z.string()
+    .min(1, "Email é obrigatório")
+    .transform((val) => val.trim().toLowerCase())
+    .refine((val) => emailRegex.test(val), {
+      message: "Email inválido. Use um formato válido como: exemplo@email.com"
+    }),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  name: z.string()
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .max(100, "O nome é muito longo")
+    .transform((val) => val.trim()),
+});
+
+export const loginSchema = z.object({
+  email: z.string()
+    .min(1, "Email é obrigatório")
+    .transform((val) => val.trim().toLowerCase())
+    .refine((val) => emailRegex.test(val), {
+      message: "Email inválido"
+    }),
+  password: z.string().min(1, "Senha é obrigatória"),
+});
+
+export const updateProfileSchema = z.object({
+  course: z.string().min(1, "Curso é obrigatório").optional(),
+  year: z.coerce.number().int().min(1).max(10).optional(),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string()
+    .min(1, "Email é obrigatório")
+    .transform((val) => val.trim().toLowerCase())
+    .refine((val) => emailRegex.test(val), {
+      message: "Email inválido"
+    }),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token é obrigatório"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
 });
 
 // Input Schemas for the Frontend Forms
@@ -59,7 +123,7 @@ export const paginatedResponseSchema = z.object({
   }),
 });
 
-// Statistics schema
+// Statistics schema (user-specific)
 export const statisticsSchema = z.object({
   total: z.number(),
   byType: z.object({
@@ -76,6 +140,25 @@ export const statisticsSchema = z.object({
   }),
 });
 
+// Public project statistics schema
+export const projectStatisticsSchema = z.object({
+  totalUsers: z.number(),
+  totalCalculations: z.number(),
+  byCourse: z.record(z.number()),
+  byYear: z.record(z.number()),
+  byType: z.object({
+    energy: z.number(),
+    network: z.number(),
+    cpu: z.number(),
+  }),
+  averageResult: z.number(),
+  recentActivity: z.array(z.object({
+    date: z.string(),
+    count: z.number(),
+  })),
+});
+
+export type User = typeof users.$inferSelect;
 export type Calculation = typeof calculations.$inferSelect;
 export type InsertCalculation = z.infer<typeof insertCalculationSchema>;
 export type PaginationParams = z.infer<typeof paginationSchema>;
@@ -83,3 +166,4 @@ export type FilterParams = z.infer<typeof filterSchema>;
 export type QueryParams = z.infer<typeof querySchema>;
 export type PaginatedResponse = z.infer<typeof paginatedResponseSchema>;
 export type Statistics = z.infer<typeof statisticsSchema>;
+export type ProjectStatistics = z.infer<typeof projectStatisticsSchema>;

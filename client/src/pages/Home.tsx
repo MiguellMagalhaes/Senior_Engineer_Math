@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateCalculation } from "@/hooks/use-calculations";
+import { useAuth } from "@/hooks/use-auth";
 import { calculateIntegral, type IntegrationResult } from "@/lib/math-utils";
 import { CalculationForm } from "@/components/CalculationForm";
 import { FunctionChart } from "@/components/FunctionChart";
@@ -10,11 +12,22 @@ import { MathResultCard } from "@/components/MathResultCard";
 import { CalculationHistory } from "@/components/CalculationHistory";
 import { StatisticsPanel } from "@/components/StatisticsPanel";
 import { ExportButton } from "@/components/ExportButton";
-import { Zap, Network, Cpu, GraduationCap, Calculator, History, BarChart3 } from "lucide-react";
+import { FirstLoginForm } from "@/components/FirstLoginForm";
+import { Zap, Network, Cpu, GraduationCap, Calculator, History, BarChart3, LogOut, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   const createCalculation = useCreateCalculation();
+
+  // Redirect to auth if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      setLocation("/auth");
+    }
+  }, [authLoading, isAuthenticated, setLocation]);
 
   // State for calculation results
   const [result, setResult] = useState<IntegrationResult | null>(null);
@@ -42,14 +55,16 @@ export default function Home() {
       
       setResult(calcResult);
 
-      // 2. Persist to backend
-      createCalculation.mutate({
-        type: activeTab,
-        functionExpression: values.functionExpression,
-        t1: values.t1,
-        t2: values.t2,
-        result: calcResult.value,
-      });
+      // 2. Persist to backend (only if authenticated)
+      if (isAuthenticated) {
+        createCalculation.mutate({
+          type: activeTab,
+          functionExpression: values.functionExpression,
+          t1: values.t1,
+          t2: values.t2,
+          result: calcResult.value,
+        });
+      }
 
       const errorMsg = calcResult.estimatedError 
         ? ` (Erro estimado: ${calcResult.estimatedError.toExponential(2)})`
@@ -120,6 +135,30 @@ export default function Home() {
 
   const resultConfig = getTabConfig();
 
+  // Show first login form if user hasn't completed profile
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Calculator className="w-12 h-12 mx-auto mb-4 animate-pulse text-primary" />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect
+  }
+
+  if (user?.isFirstLogin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <FirstLoginForm />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-12">
       {/* Header */}
@@ -135,10 +174,27 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation("/statistics")}
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Estatísticas do Projeto
+            </Button>
             <ExportButton />
-            <div className="hidden md:block text-xs font-mono bg-muted px-3 py-1 rounded-full text-muted-foreground">
-              Aplicações do Cálculo Integral
+            <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full">
+              <User className="w-4 h-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">{user?.name}</span>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={logout}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
           </div>
         </div>
       </header>

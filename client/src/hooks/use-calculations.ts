@@ -9,7 +9,9 @@ export function useCalculations(params?: QueryParams) {
     queryKey: [api.calculations.list.path, params],
     queryFn: async () => {
       const url = buildUrl(api.calculations.list.path, params as Record<string, string | number>);
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed to fetch calculation history");
       return api.calculations.list.responses[200].parse(await res.json());
     },
@@ -21,7 +23,9 @@ export function useStatistics() {
   return useQuery({
     queryKey: [api.calculations.statistics.path],
     queryFn: async () => {
-      const res = await fetch(api.calculations.statistics.path);
+      const res = await fetch(api.calculations.statistics.path, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed to fetch statistics");
       return api.calculations.statistics.responses[200].parse(await res.json()) as Statistics;
     },
@@ -33,7 +37,9 @@ export function useExportCalculations() {
   return useQuery({
     queryKey: [api.calculations.export.path],
     queryFn: async () => {
-      const res = await fetch(api.calculations.export.path);
+      const res = await fetch(api.calculations.export.path, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed to export calculations");
       return api.calculations.export.responses[200].parse(await res.json());
     },
@@ -49,6 +55,7 @@ export function useCreateCalculation() {
       const res = await fetch(api.calculations.create.path, {
         method: api.calculations.create.method,
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       

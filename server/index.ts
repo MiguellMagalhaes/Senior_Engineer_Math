@@ -3,9 +3,13 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { setupAuth } from "./auth";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Setup authentication
+setupAuth(app);
 
 declare module "http" {
   interface IncomingMessage {
@@ -22,6 +26,20 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+// CORS for development
+if (process.env.NODE_ENV === "development") {
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+    next();
+  });
+}
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -64,11 +82,16 @@ app.use((req, res, next) => {
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    // Don't send response if headers already sent
+    if (res.headersSent) {
+      return _next(err);
+    }
+    
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    log(`Error: ${message}`, "error");
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after
