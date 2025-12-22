@@ -47,7 +47,7 @@ async function initializeApp() {
 }
 
 // Vercel serverless function handler
-// This only handles /api/* routes
+// This only handles /api/* routes (configured in vercel.json)
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   await initializeApp();
   
