@@ -1,55 +1,103 @@
+# Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+# e proposto na unidade curricular de Análise Matemática I.
+# 
+# Este ficheiro define o workflow do GitHub Actions para deploy automático no GitHub Pages.
+# Quando há push para a branch main, este workflow:
+# 1. Faz checkout do código
+# 2. Instala dependências
+# 3. Compila o projeto
+# 4. Faz deploy para GitHub Pages
+# Tudo de forma automática, sem intervenção manual.
+
+# Nome do workflow (aparece na interface do GitHub Actions)
 name: Deploy to GitHub Pages
 
+# Define quando o workflow deve ser executado
 on:
+  # Executa quando há push (commit) para a branch main
   push:
     branches:
       - main
 
+# Define as permissões necessárias para o workflow
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: read   # Permissão de leitura do repositório
+  pages: write      # Permissão de escrita no GitHub Pages
+  id-token: write   # Permissão para autenticação OIDC
 
+# Configuração de concorrência (evita múltiplos deploys simultâneos)
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: "pages"              # Todos os workflows deste grupo são mutuamente exclusivos
+  cancel-in-progress: false   # Não cancela deploys em progresso (espera que terminem)
 
+# Define os jobs (tarefas) do workflow
 jobs:
+  # Job de build: compila o projeto
   build:
+    # Executa numa máquina virtual Ubuntu (versão mais recente)
     runs-on: ubuntu-latest
+    
+    # Define os passos (steps) deste job
     steps:
+      # Passo 1: Faz checkout do código do repositório
       - name: Checkout
+        # Usa a action oficial do GitHub para fazer checkout
         uses: actions/checkout@v4
 
+      # Passo 2: Configura o ambiente Node.js
       - name: Setup Node.js
+        # Usa a action oficial para configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '20'  # Versão do Node.js a usar
+          cache: 'npm'        # Ativa cache do npm para builds mais rápidos
 
+      # Passo 3: Instala as dependências do projeto
       - name: Install dependencies
+        # npm ci instala exatamente as versões do package-lock.json (mais rápido e confiável)
         run: npm ci
 
+      # Passo 4: Compila o projeto
       - name: Build
+        # Executa o script de build definido no package.json
         run: npm run build
         env:
+          # Define a variável de ambiente GITHUB_PAGES_BASE
+          # Usa o nome do repositório para construir o caminho base
+          # Exemplo: /Senior_Engineer_Math/
           GITHUB_PAGES_BASE: /${{ github.event.repository.name }}/
 
+      # Passo 5: Configura o GitHub Pages
       - name: Setup Pages
+        # Usa a action oficial para configurar o GitHub Pages
         uses: actions/configure-pages@v4
 
+      # Passo 6: Faz upload dos ficheiros compilados como artefato
       - name: Upload artifact
+        # Usa a action oficial para fazer upload
         uses: actions/upload-pages-artifact@v3
         with:
+          # Pasta que contém os ficheiros estáticos a fazer deploy
           path: dist/public
 
+  # Job de deploy: publica no GitHub Pages
   deploy:
+    # Define o ambiente de deploy (github-pages)
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: github-pages                    # Nome do ambiente
+      url: ${{ steps.deployment.outputs.page_url }} # URL do site após deploy
+    # Executa numa máquina virtual Ubuntu
     runs-on: ubuntu-latest
+    # Só executa após o job "build" terminar com sucesso
     needs: build
+    # Define os passos deste job
     steps:
+      # Passo único: Faz deploy para GitHub Pages
       - name: Deploy to GitHub Pages
+        # ID do passo (usado para referenciar outputs)
         id: deployment
+        # Usa a action oficial para fazer deploy
         uses: actions/deploy-pages@v4
+
+# Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+# e proposto na unidade curricular de Análise Matemática I.

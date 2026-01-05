@@ -1,15 +1,58 @@
+<!--
+  Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+  e proposto na unidade curricular de Análise Matemática I.
+  
+  Este ficheiro é o template HTML principal da aplicação.
+  É o ponto de entrada que o navegador carrega primeiro.
+  Contém a estrutura básica HTML e referências aos scripts React.
+-->
+
+<!-- Declaração do tipo de documento: HTML5 -->
 <!DOCTYPE html>
+
+<!-- Elemento raiz HTML com atributo de idioma -->
 <html lang="en">
+  <!-- Cabeçalho do documento HTML -->
   <head>
+    <!-- Define a codificação de caracteres como UTF-8 (suporta todos os caracteres) -->
     <meta charset="UTF-8" />
+    
+    <!-- Meta tag de viewport para responsividade em dispositivos móveis -->
+    <!-- width=device-width: largura igual à do dispositivo -->
+    <!-- initial-scale=1.0: zoom inicial de 100% -->
+    <!-- maximum-scale=1: impede zoom máximo (melhora UX em mobile) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    
+    <!-- Ícone favorito (favicon) da aplicação -->
+    <!-- O caminho "./favicon.png" é relativo e será resolvido pelo Vite -->
     <link rel="icon" type="image/png" href="./favicon.png" />
+    
+    <!-- Preconexão com Google Fonts para melhorar performance -->
+    <!-- Estabelece conexão antecipada com o servidor de fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Importa fontes do Google Fonts -->
+    <!-- Inclui múltiplas famílias de fontes para uso na aplicação -->
+    <!-- As fontes são carregadas de forma assíncrona para não bloquear o render -->
     <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   </head>
+  
+  <!-- Corpo do documento HTML -->
   <body>
+    <!-- Div raiz onde o React monta a aplicação -->
+    <!-- O React procura este elemento pelo id "root" e renderiza toda a aplicação aqui -->
     <div id="root"></div>
+    
+    <!-- Script principal da aplicação React -->
+    <!-- type="module": carrega como módulo ES6 (permite import/export) -->
+    <!-- src="/src/main.tsx": caminho para o ficheiro de entrada -->
+    <!-- O Vite processa este ficheiro e todos os seus imports -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+
+<!--
+  Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+  e proposto na unidade curricular de Análise Matemática I.
+-->
