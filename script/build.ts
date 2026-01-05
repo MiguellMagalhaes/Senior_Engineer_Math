@@ -10,11 +10,13 @@ async function buildAll() {
   
   // Create 404.html for GitHub Pages SPA routing
   // GitHub Pages uses 404.html to handle client-side routing
+  // This ensures that all routes are handled by the SPA
   const distPath = join(import.meta.dirname, "..", "dist", "public");
   const indexPath = join(distPath, "index.html");
   
   try {
     const indexContent = await readFile(indexPath, "utf-8");
+    // 404.html should be identical to index.html for SPAs
     await writeFile(join(distPath, "404.html"), indexContent);
     console.log("✅ 404.html criado para GitHub Pages SPA routing");
   } catch (error: any) {
