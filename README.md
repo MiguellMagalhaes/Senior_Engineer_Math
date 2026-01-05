@@ -22,22 +22,12 @@ O projeto demonstra, de forma matematicamente rigorosa, três aplicações reais
 - **math.js** - Biblioteca para parsing e avaliação de expressões matemáticas
 - **recharts** - Biblioteca de gráficos React para visualização de dados
 - **React Hook Form** - Gestão eficiente de formulários React
-- **TanStack React Query** - Gestão de dados remotos e cache
+- **TanStack React Query** - Gestão de estado e cache
 - **Wouter** - Routing leve para aplicações de página única
 - **Lucide React** - Ícones SVG modernos e minimalistas
 
-### Backend
-- **Express.js** - Framework Node.js para criar APIs REST
-- **TypeScript** - Mesmo como frontend, para consistência
-- **Drizzle ORM** - ORM tipo-seguro para interação com bases de dados
-- **PostgreSQL** - Base de dados relacional robusta
-- **Zod** - Validação e parsing de esquemas com tipos TypeScript
-
-### Ferramentas de Desenvolvimento
-- **npm** - Gestor de pacotes Node.js
-- **Tailwind CSS** - Processamento de CSS utilitário
-- **Prettier** - Formatação de código
-- **ESLint** - Linting de código JavaScript/TypeScript
+### Armazenamento
+- **localStorage** - Armazenamento local no navegador para histórico de cálculos
 
 ---
 
@@ -48,264 +38,199 @@ O projeto demonstra, de forma matematicamente rigorosa, três aplicações reais
 ```
 ├── client/                    # Frontend (React/Vite)
 │   ├── src/
-│   │   ├── components/       # Componentes reutilizáveis
-│   │   │   ├── ui/          # Componentes base (Shadcn/UI)
-│   │   │   ├── CalculationForm.tsx      # Formulário para entrada de dados
-│   │   │   ├── FunctionChart.tsx        # Gráfico da função matemática
-│   │   │   └── MathResultCard.tsx       # Card com resultados
-│   │   ├── hooks/            # Custom React hooks
-│   │   │   └── use-calculations.ts      # Hook para API de cálculos
-│   │   ├── lib/
-│   │   │   ├── math-utils.ts           # Integração numérica
-│   │   │   └── queryClient.ts          # Configuração do React Query
-│   │   ├── pages/            # Páginas da aplicação
-│   │   │   └── Home.tsx      # Página principal
-│   │   ├── App.tsx           # Componente raiz
-│   │   └── main.tsx          # Ponto de entrada
-│   └── index.html            # Arquivo HTML base
-├── server/                    # Backend (Express.js)
-│   ├── index.ts              # Ponto de entrada do servidor
-│   ├── routes.ts             # Definição de rotas API
-│   ├── storage.ts            # Camada de armazenamento (DatabaseStorage)
-│   ├── db.ts                 # Configuração Drizzle/PostgreSQL
-│   └── vite.ts               # Integração Vite
-├── shared/                    # Código partilhado entre frontend e backend
-│   ├── schema.ts             # Definição de tabelas Drizzle e tipos Zod
-│   └── routes.ts             # Contrato de API (esquemas de requisição/resposta)
-└── package.json              # Dependências do projeto
+│   │   ├── components/        # Componentes React reutilizáveis
+│   │   │   ├── CalculationForm.tsx    # Formulário de entrada
+│   │   │   ├── FunctionChart.tsx      # Gráfico da função
+│   │   │   └── MathResultCard.tsx     # Card de resultados
+│   │   ├── hooks/             # React Hooks customizados
+│   │   │   └── use-local-storage.ts   # Gestão de histórico local
+│   │   ├── lib/               # Utilitários
+│   │   │   └── math-utils.ts  # Lógica de integração numérica
+│   │   ├── pages/             # Páginas da aplicação
+│   │   │   └── Home.tsx       # Página principal
+│   │   └── App.tsx            # Componente raiz
+│   ├── index.html             # HTML principal
+│   └── public/                # Arquivos estáticos
+├── script/                    # Scripts de build
+│   └── build.ts               # Script de build para produção
+├── package.json               # Dependências e scripts
+├── vite.config.ts             # Configuração do Vite
+└── tsconfig.json              # Configuração do TypeScript
 ```
-
-### Fluxo de Dados
-
-```
-Frontend (React)
-  ↓
-CalculationForm (entrada do utilizador)
-  ↓
-calculateIntegral() (math-utils.ts) → Integração numérica em tempo real
-  ↓
-FunctionChart (visualização) + MathResultCard (resultado)
-  ↓
-useCreateCalculation hook → POST /api/calculations
-  ↓
-Backend (Express)
-  ↓
-storage.createCalculation() → DatabaseStorage
-  ↓
-PostgreSQL (persistência)
-```
-
----
-
-## Módulos Matemáticos
-
-### 1. Consumo Energético
-**Modelo Matemático:**
-```
-E = ∫[t₁,t₂] P(t) dt
-```
-
-- **P(t)**: Função de potência (Watts)
-- **t**: Tempo (horas)
-- **E**: Energia total (Watt-hora)
-
-**Exemplo:** `P(t) = 100 + 20*t`
-- Entrada: função de potência, tempo inicial e final
-- Saída: Energia em Wh e kWh
-- **Interpretação:** A energia é a área sob a curva de potência ao longo do tempo.
-
----
-
-### 2. Transferência de Dados numa Rede
-**Modelo Matemático:**
-```
-D = ∫[t₁,t₂] R(t) dt
-```
-
-- **R(t)**: Taxa de transferência (Megabits por segundo)
-- **t**: Tempo (segundos)
-- **D**: Total de dados transferidos (Megabits)
-
-**Exemplo:** `R(t) = 50 + 10*sin(t)`
-- Entrada: função de taxa de transferência, tempo inicial e final
-- Saída: Dados em Mb e MB
-- **Interpretação:** O volume de dados é a área sob a curva de taxa de transferência ao longo do tempo.
-
----
-
-### 3. Carga Computacional de um Servidor
-**Modelo Matemático:**
-```
-C = ∫[t₁,t₂] CPU(t) dt
-```
-
-- **CPU(t)**: Utilização de CPU (0–100%)
-- **t**: Tempo (segundos)
-- **C**: Carga computacional acumulada
-
-**Exemplo:** `CPU(t) = 30 + 40*t/(t+10)`
-- Entrada: função de utilização CPU, tempo inicial e final
-- Saída: Carga computacional acumulada
-- **Interpretação:** Indicador útil para análise de desempenho e planeamento de recursos.
-
----
-
-## Métodos Numéricos
-
-### Integração Numérica
-O projeto utiliza a **Regra dos Trapézios Composta** com subdivisions adaptativas para aproximação numérica de integrais:
-
-```typescript
-Σ(i=0 até n-1) [(f(xᵢ) + f(xᵢ₊₁)) / 2] × Δx
-```
-
-Onde:
-- **n**: Número de subintervalos (1000 por padrão)
-- **Δx**: Largura de cada subintervalo `(t₂ - t₁) / n`
-- **f(xᵢ)**: Avaliação da função em cada ponto
-
-Esta abordagem oferece um bom equilíbrio entre precisão e desempenho para aplicações interactivas.
-
----
-
-## Como Executar
-
-### Pré-requisitos
-- Node.js (v18 ou superior)
-- npm ou yarn
-- Base de dados PostgreSQL (fornecida automaticamente no Replit)
-
-### Instalação e Execução
-
-1. **Clonar/Abrir o projeto:**
-   ```bash
-   cd /path/to/project
-   ```
-
-2. **Instalar dependências:**
-   ```bash
-   npm install
-   ```
-
-3. **Configurar base de dados:**
-   ```bash
-   npm run db:push
-   ```
-
-4. **Iniciar o servidor de desenvolvimento:**
-   ```bash
-   npm run dev
-   ```
-
-   A aplicação estará disponível em `http://localhost:5000`
-
-### Variáveis de Ambiente
-- `DATABASE_URL` - String de conexão PostgreSQL (configurada automaticamente)
-- `VITE_API_URL` - URL da API (padrão: `/api`)
-
----
-
-## API REST
-
-### Endpoints
-
-#### POST `/api/calculations`
-Criar um novo cálculo e persistir na base de dados.
-
-**Requisição:**
-```json
-{
-  "type": "energy|network|cpu",
-  "functionExpression": "100 + 20*t",
-  "t1": 0,
-  "t2": 10,
-  "result": 15000.5
-}
-```
-
-**Resposta (201 Created):**
-```json
-{
-  "id": 1,
-  "type": "energy",
-  "functionExpression": "100 + 20*t",
-  "t1": 0,
-  "t2": 10,
-  "result": 15000.5,
-  "createdAt": "2025-12-21T10:30:00Z"
-}
-```
-
-#### GET `/api/calculations`
-Obter histórico de todos os cálculos.
-
-**Resposta (200 OK):**
-```json
-[
-  {
-    "id": 1,
-    "type": "energy",
-    "functionExpression": "100 + 20*t",
-    "t1": 0,
-    "t2": 10,
-    "result": 15000.5,
-    "createdAt": "2025-12-21T10:30:00Z"
-  }
-]
-```
-
----
-
-## Validação de Entrada
-
-### Expressões Matemáticas
-- Variável independente: `t`
-- Operadores suportados: `+`, `-`, `*`, `/`, `^` (potência)
-- Funções suportadas: `sin`, `cos`, `tan`, `sqrt`, `log`, `exp`, etc.
-- Exemplos válidos:
-  - `100 + 20*t`
-  - `50 + 10*sin(t)`
-  - `30 + 40*t/(t+10)`
-  - `100*exp(-0.1*t)`
-
-### Validação de Intervalos
-- `t1` e `t2` devem ser números
-- `t2` > `t1` (obrigatório)
-- Ambos os valores válidos no contexto do problema
 
 ---
 
 ## Funcionalidades
 
-✅ **Cálculo em Tempo Real** - Resultados imediatos ao modificar parâmetros
-✅ **Visualização Gráfica** - Gráficos interactivos da função de integração
-✅ **Persistência de Dados** - Histórico de cálculos guardado em BD
-✅ **Validação Robusta** - Validação de expressões matemáticas e intervalos
-✅ **Interface Responsiva** - Funciona em desktop, tablet e mobile
-✅ **Interpretação Matemática** - Explicação clara do significado de cada resultado
-✅ **Design Académico** - Interface limpa e focada no rigor matemático
+### 1. Cálculo de Integrais Numéricos
+- **Método**: Regra do Trapézio com refinamento adaptativo opcional
+- **Precisão**: Configurável (100 a 10.000 subintervalos)
+- **Estimativa de Erro**: Extrapolação de Richardson para estimar o erro
+- **Validação**: Expressões matemáticas validadas com `math.js`
+
+### 2. Visualização Gráfica
+- Gráficos interativos da função integrada
+- Visualização da área sob a curva
+- Cores temáticas por tipo de cálculo
+
+### 3. Histórico de Cálculos
+- Armazenamento local no navegador (localStorage)
+- Estatísticas básicas (total de cálculos, por tipo)
+- Visualização dos últimos cálculos realizados
+
+### 4. Três Contextos de Aplicação
+
+#### Consumo Energético
+- **Fórmula**: E = ∫ P(t) dt
+- **Interpretação**: Energia total consumida (Wh/kWh)
+
+#### Transferência de Dados
+- **Fórmula**: D = ∫ R(t) dt
+- **Interpretação**: Volume total de dados transferidos (Mb/MB)
+
+#### Carga Computacional
+- **Fórmula**: C = ∫ CPU(t) dt
+- **Interpretação**: Carga acumulada do servidor
+
+---
+
+## Instalação e Execução
+
+### Pré-requisitos
+- Node.js 20 ou superior
+- npm ou yarn
+
+### Instalação
+
+```bash
+# Clonar o repositório
+git clone https://github.com/SEU_USUARIO/Senior_Engineer_Math.git
+
+# Entrar na pasta
+cd Senior_Engineer_Math
+
+# Instalar dependências
+npm install
+```
+
+### Desenvolvimento Local
+
+```bash
+# Iniciar servidor de desenvolvimento
+npm run dev
+```
+
+A aplicação estará disponível em: `http://localhost:5173`
+
+### Build para Produção
+
+```bash
+# Gerar build de produção
+npm run build
+```
+
+Os arquivos estáticos serão gerados em `dist/public/`
+
+---
+
+## Deploy no GitHub Pages
+
+### Método Automático (Recomendado)
+
+1. **Ativar GitHub Pages**:
+   - Vá em **Settings** → **Pages**
+   - Em **Source**, selecione: **GitHub Actions**
+
+2. **Fazer Push**:
+   ```bash
+   git add .
+   git commit -m "Deploy to GitHub Pages"
+   git push origin main
+   ```
+
+3. **Aguardar Deploy**:
+   - O GitHub Actions fará o build automaticamente
+   - Aguarde 2-3 minutos
+   - O site estará disponível em: `https://SEU_USUARIO.github.io/Senior_Engineer_Math/`
+
+### Método Manual
+
+1. **Build Local**:
+   ```bash
+   npm run build
+   ```
+
+2. **Configurar GitHub Pages**:
+   - Vá em **Settings** → **Pages**
+   - Em **Source**, selecione:
+     - **Branch**: `main` (ou `gh-pages`)
+     - **Folder**: `/dist/public`
+
+3. **Fazer Push**:
+   ```bash
+   git add dist/public
+   git commit -m "Deploy to GitHub Pages"
+   git push origin main
+   ```
+
+---
+
+## Módulos Matemáticos
+
+### Integração Numérica
+
+O projeto implementa a **Regra do Trapézio** para cálculo de integrais definidos:
+
+```typescript
+∫[a,b] f(x) dx ≈ (b-a)/n * [f(a)/2 + f(x₁) + f(x₂) + ... + f(xₙ₋₁) + f(b)/2]
+```
+
+**Características**:
+- Método adaptativo opcional (refina em áreas de maior variação)
+- Estimativa de erro usando extrapolação de Richardson
+- Suporte para expressões matemáticas complexas via `math.js`
+
+### Validação de Expressões
+
+- Parsing seguro de expressões matemáticas
+- Suporte para funções trigonométricas, exponenciais, logarítmicas
+- Validação de sintaxe antes da execução
 
 ---
 
 ## Notas Importantes
 
-- **Rigor Matemático**: Todos os cálculos seguem as definições clássicas de cálculo integral
-- **Segurança**: A library `math.js` é utilizada para parsing seguro de expressões
-- **Performance**: Integração numérica otimizada com 1000 subintervalos
-- **Responsividade**: Actualizações instantâneas sem recarregar a página
+### Armazenamento Local
+- O histórico de cálculos é armazenado no `localStorage` do navegador
+- Os dados são específicos de cada navegador/dispositivo
+- Limpar o cache do navegador remove o histórico
+
+### Compatibilidade
+- Funciona em todos os navegadores modernos
+- Requer JavaScript habilitado
+- Funciona offline após o primeiro carregamento
+
+### Limitações
+- Histórico limitado a 100 cálculos (mais recentes são mantidos)
+- Dados não são sincronizados entre dispositivos
+- Não há persistência em servidor
 
 ---
 
-## Autor e Contexto
+## Contribuições
 
-Projeto académico desenvolvido para a unidade curricular de **Análise Matemática I** no programa de **Engenharia Informática** do **Instituto Superior Politécnico de Gaya**.
+Este é um projeto académico desenvolvido para fins educacionais. Contribuições são bem-vindas!
 
 ---
 
 ## Licença
 
-Este projeto é fornecido para fins educacionais.
+MIT License - Veja o arquivo LICENSE para mais detalhes.
 
 ---
 
-**Última Actualização:** Dezembro de 2025
+## Autor
+
+Desenvolvido para a unidade curricular de **Análise Matemática I** - Engenharia Informática, ISPGaya.
+
+© 2024 Engenharia Informática - ISPGaya

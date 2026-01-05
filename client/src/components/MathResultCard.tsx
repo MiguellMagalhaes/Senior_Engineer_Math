@@ -18,7 +18,7 @@ export function MathResultCard({
   value, 
   unit, 
   interpretation, 
-  icon = "activity",
+  icon = "energy",
   secondaryValue,
   estimatedError,
   steps

@@ -1,33 +1,18 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateCalculation } from "@/hooks/use-calculations";
-import { useAuth } from "@/hooks/use-auth";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { calculateIntegral, type IntegrationResult } from "@/lib/math-utils";
 import { CalculationForm } from "@/components/CalculationForm";
 import { FunctionChart } from "@/components/FunctionChart";
 import { MathResultCard } from "@/components/MathResultCard";
-import { CalculationHistory } from "@/components/CalculationHistory";
-import { StatisticsPanel } from "@/components/StatisticsPanel";
-import { ExportButton } from "@/components/ExportButton";
-import { FirstLoginForm } from "@/components/FirstLoginForm";
-import { Zap, Network, Cpu, GraduationCap, Calculator, History, BarChart3, LogOut, User } from "lucide-react";
+import { Zap, Network, Cpu, GraduationCap, Calculator, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
-  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
-  const createCalculation = useCreateCalculation();
-
-  // Redirect to auth if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      setLocation("/auth");
-    }
-  }, [authLoading, isAuthenticated, setLocation]);
+  const { history, saveCalculation, clearHistory, getStatistics } = useLocalStorage();
 
   // State for calculation results
   const [result, setResult] = useState<IntegrationResult | null>(null);
@@ -41,7 +26,7 @@ export default function Home() {
     setResult(null); // Reset previous result
 
     try {
-      // 1. Perform client-side math calculation with new parameters
+      // Perform client-side math calculation
       const calcResult = calculateIntegral(
         values.functionExpression, 
         values.t1, 
@@ -50,21 +35,19 @@ export default function Home() {
         values.useAdaptive || false
       );
       
-      // Simulate a small delay for better UX (so user sees the loading state)
+      // Simulate a small delay for better UX
       await new Promise(resolve => setTimeout(resolve, 600));
       
       setResult(calcResult);
 
-      // 2. Persist to backend (only if authenticated)
-      if (isAuthenticated) {
-        createCalculation.mutate({
-          type: activeTab,
-          functionExpression: values.functionExpression,
-          t1: values.t1,
-          t2: values.t2,
-          result: calcResult.value,
-        });
-      }
+      // Save to localStorage
+      saveCalculation({
+        type: activeTab as "energy" | "network" | "cpu",
+        functionExpression: values.functionExpression,
+        t1: values.t1,
+        t2: values.t2,
+        result: calcResult.value,
+      });
 
       const errorMsg = calcResult.estimatedError 
         ? ` (Erro estimado: ${calcResult.estimatedError.toExponential(2)})`
@@ -134,30 +117,7 @@ export default function Home() {
   };
 
   const resultConfig = getTabConfig();
-
-  // Show first login form if user hasn't completed profile
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Calculator className="w-12 h-12 mx-auto mb-4 animate-pulse text-primary" />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null; // Will redirect
-  }
-
-  if (user?.isFirstLogin) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <FirstLoginForm />
-      </div>
-    );
-  }
+  const stats = getStatistics();
 
   return (
     <div className="min-h-screen bg-background pb-12">
@@ -173,29 +133,6 @@ export default function Home() {
               <p className="text-xs text-muted-foreground font-medium">Engenharia Informática - ISPGaya</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLocation("/statistics")}
-            >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Estatísticas do Projeto
-            </Button>
-            <ExportButton />
-            <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full">
-              <User className="w-4 h-4 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">{user?.name}</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={logout}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
-          </div>
         </div>
       </header>
 
@@ -209,31 +146,64 @@ export default function Home() {
         </div>
 
         {/* Statistics and History Toggle */}
-        <div className="mb-6 flex gap-4">
-          <div className="flex-1">
-            <StatisticsPanel />
-          </div>
-          <div className="flex-1">
-            <Card className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <History className="w-5 h-5 text-primary" />
-                  <h3 className="font-semibold">Histórico</h3>
-                </div>
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-sm text-muted-foreground">Total de Cálculos</h3>
+                <p className="text-2xl font-bold">{stats.total}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">Energia: {stats.byType.energy}</p>
+                <p className="text-xs text-muted-foreground">Rede: {stats.byType.network}</p>
+                <p className="text-xs text-muted-foreground">CPU: {stats.byType.cpu}</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <History className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold">Histórico</h3>
+              </div>
+              <div className="flex gap-2">
                 <button
                   onClick={() => setShowHistory(!showHistory)}
                   className="text-sm text-primary hover:underline"
                 >
                   {showHistory ? "Ocultar" : "Mostrar"}
                 </button>
+                {history.length > 0 && (
+                  <button
+                    onClick={clearHistory}
+                    className="text-sm text-destructive hover:underline"
+                  >
+                    Limpar
+                  </button>
+                )}
               </div>
-            </Card>
-          </div>
+            </div>
+          </Card>
         </div>
 
-        {showHistory && (
+        {showHistory && history.length > 0 && (
           <div className="mb-8">
-            <CalculationHistory />
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">Últimos Cálculos</h3>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {history.slice(0, 10).map((item) => (
+                  <div key={item.id} className="flex items-center justify-between p-2 bg-muted/30 rounded text-sm">
+                    <div>
+                      <span className="font-mono">{item.functionExpression}</span>
+                      <span className="text-muted-foreground ml-2">
+                        [{item.t1}, {item.t2}]
+                      </span>
+                    </div>
+                    <div className="font-semibold">{item.result.toFixed(2)}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </div>
         )}
 
@@ -354,7 +324,7 @@ export default function Home() {
                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                     <Calculator className="w-8 h-8 opacity-50" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">Aguadando Cálculo</h3>
+                  <h3 className="text-lg font-medium mb-2">Aguardando Cálculo</h3>
                   <p className="max-w-xs text-sm">
                     Configure os parâmetros à esquerda e clique em "Calcular Integral" para visualizar os resultados e gráficos.
                   </p>
