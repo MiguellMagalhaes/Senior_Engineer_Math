@@ -1,6 +1,6 @@
 # 📐 Simulador de Integrais - Análise Matemática I
 
-**Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, e proposto na unidade curricular de Análise Matemática I.**
+**Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, e proposto na unidade curricular de Análise Matemática I.**
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://miguellmagalhaes.github.io/Senior_Engineer_Math/)
 [![React](https://img.shields.io/badge/React-18.3.1-blue)](https://reactjs.org/)
@@ -565,5 +565,5 @@ Este projeto está sob a licença MIT. Veja o ficheiro `package.json` para mais 
 
 ---
 
-**Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, e proposto na unidade curricular de Análise Matemática I.**
+**Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, e proposto na unidade curricular de Análise Matemática I.**
 
