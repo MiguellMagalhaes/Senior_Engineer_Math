@@ -1,5 +1,5 @@
 /**
- * Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+ * Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, 
  * e proposto na unidade curricular de Análise Matemática I.
  * 
  * Este ficheiro contém o componente FunctionChart.
@@ -167,6 +167,6 @@ export function FunctionChart({
 }
 
 /**
- * Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+ * Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, 
  * e proposto na unidade curricular de Análise Matemática I.
  */

@@ -1,5 +1,5 @@
 /**
- * Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+ * Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, 
  * e proposto na unidade curricular de Análise Matemática I.
  * 
  * Este ficheiro é o ponto de entrada da aplicação React.
@@ -24,6 +24,6 @@ import "./index.css";
 createRoot(document.getElementById("root")!).render(<App />);
 
 /**
- * Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+ * Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, 
  * e proposto na unidade curricular de Análise Matemática I.
  */

@@ -1,5 +1,5 @@
 /**
- * Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+ * Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, 
  * e proposto na unidade curricular de Análise Matemática I.
  * 
  * Este ficheiro configura o cliente React Query (TanStack Query).
@@ -126,6 +126,6 @@ export const queryClient = new QueryClient({
 });
 
 /**
- * Trabalho realizado por Miguel Magalhães, aluno de Engenharia Informática, 
+ * Trabalho realizado por Miguel Magalhães, Helder Rocha e David Borges, alunos de Engenharia Informática, 
  * e proposto na unidade curricular de Análise Matemática I.
  */
